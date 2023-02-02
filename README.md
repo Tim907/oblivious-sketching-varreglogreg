@@ -1,15 +1,13 @@
 # Oblivious Sketching for Logistic Regression
 
-[![python-version](https://img.shields.io/badge/python-3.8%20%7C%203.9-blue)](https://img.shields.io/badge/python-3.8%20%7C%203.9-blue)
-
-This is the accompanying code repository for ...
+This is the accompanying code repository for the paper submitted at ICLR (2023)
 
 ## How to install
 
 1. Clone the repository and navigate into the new directory
 
    ```bash
-   git clone https://github.com/Simonomlor/oblivious-sketching-varreglogreg
+   git clone https://github.com/Tim907/oblivious_sketching_varreglogreg
    cd oblivious-sketching-varreglogreg
    ```
 
