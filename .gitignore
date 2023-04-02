@@ -1,4 +1,5 @@
 venv/
+build/
 tests/__pycache__/
 sketching/__pycache__/
 oblivious_sketching_logreg.egg-info/
