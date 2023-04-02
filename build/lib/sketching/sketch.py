@@ -16,6 +16,8 @@ def _insert(X_prime, x_vec, alpha, b, N):
 
 
 class Sketch:
+    """Sketch used to calculate an Oblivious Sketching Experiment when parameter cohensketch is 1"""
+
     def __init__(self, h_max, b, N, n, d):
         self.h_max = h_max
         self.b = b

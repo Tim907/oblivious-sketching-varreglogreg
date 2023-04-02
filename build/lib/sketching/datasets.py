@@ -97,7 +97,7 @@ class Dataset(abc.ABC):
 
         Z = self.get_Z()
         logger.info("Computing beta_opt...")
-        beta_opt = base_optimizer.optimize(Z).x
+        beta_opt = base_optimizer.optimize(Z)
         logger.info("Done.")
         np.save(beta_opt_path, beta_opt)
         logger.info(f"Saved beta_opt at {beta_opt_path}.")
@@ -347,7 +347,6 @@ class Webspam_libsvm(Dataset):
 
     def download_dataset(self):
         logger.info(f"Downloading data from {self.dataset_url}")
-        
 
         context = ssl._create_unverified_context()
         with urllib.request.urlopen(self.dataset_url, context=context) as f:
@@ -355,16 +354,16 @@ class Webspam_libsvm(Dataset):
 
         logger.info("Download completed.")
         logger.info("Extracting data...")
-        
+
         #
-        # wrong format in lines 233355 and 306260: column names not ascending, 22.7.2022
+        # wrong format in lines 233355 and 306260: column names not ascending
+        # These two rows get simply removed. Last time checked on 22.7.2022
         #
-        file_raw = lzma.open(io.BytesIO(contents), mode = "rb")
+        file_raw = lzma.open(io.BytesIO(contents), mode="rb")
         file_lines = file_raw.readlines()
         del file_lines[306259]
         del file_lines[233354]
         file_raw = b"".join(file_lines)
-
 
         X_sparse, y = load_svmlight_file(io.BufferedReader(io.BytesIO(file_raw)))
 
@@ -436,6 +435,7 @@ class Synthetic_Dataset(Dataset):
 
         return X, y
 
+
 class Synthetic_Dataset_Cohen(Dataset):
     def __init__(self, n_rows, d_cols, use_caching=False):
         self.n_rows = n_rows
@@ -446,24 +446,23 @@ class Synthetic_Dataset_Cohen(Dataset):
         return f"synthetic_n_{self.n_rows}_d_{self.d_cols}"
 
     def load_X_y(self):
-        block1 = np.ones((self.n_rows-self.d_cols-int(self.n_rows/10)-self.d_cols ,self.d_cols))*-1
-        block2 = np.ones((int(self.n_rows/10),self.d_cols))
-        outlier_1 = np.identity(self.d_cols)*self.n_rows*(-1)
-        #block3 = np.repeat(outlier_1, self.d_cols,  axis=0)
-        block3 = np.ones((self.d_cols,self.d_cols))*(-self.n_rows)
-        block4 = np.zeros((self.n_rows,self.d_cols))
-        block6 = np.identity(self.d_cols)*self.n_rows
-        block5 = np.vstack([block1,block2,block3, block6 ,block4])
+        block1 = np.ones((self.n_rows - self.d_cols - int(self.n_rows / 10) - self.d_cols, self.d_cols)) * -1
+        block2 = np.ones((int(self.n_rows / 10), self.d_cols))
+        outlier_1 = np.identity(self.d_cols) * self.n_rows * (-1)
+        # block3 = np.repeat(outlier_1, self.d_cols,  axis=0)
+        block3 = np.ones((self.d_cols, self.d_cols)) * (-self.n_rows)
+        block4 = np.zeros((self.n_rows, self.d_cols))
+        block6 = np.identity(self.d_cols) * self.n_rows
+        block5 = np.vstack([block1, block2, block3, block6, block4])
 
-        label = np.hstack([np.ones(self.n_rows),-np.ones(self.n_rows)]).reshape(2*self.n_rows,1)
-                
-        block = np.hstack([block5,label])
+        label = np.hstack([np.ones(self.n_rows), -np.ones(self.n_rows)]).reshape(2 * self.n_rows, 1)
+
+        block = np.hstack([block5, label])
 
         # shuffle
         block = np.random.permutation(block)
 
         X = block[:, :-1]
         y = block[:, -1]
-        
 
         return X, y

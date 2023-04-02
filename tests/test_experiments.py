@@ -1,7 +1,9 @@
+import os
 import numpy as np
 import pandas as pd
 from numpy.testing import assert_array_equal
 
+from sketching.optimizer import base_optimizer
 from sketching.datasets import Covertype_Sklearn, Dataset
 from sketching.experiments import (
     CauchySketchingExperiment,
@@ -34,7 +36,7 @@ def test_uniform_sampling_experiment(tmp_path):
         max_size=5,
         step_size=2,
         num_runs=3,
-        varreg_lambda=0
+        optimizer=base_optimizer()
     )
     experiment.run()
 
@@ -64,7 +66,7 @@ def test_cauchy_sketching_experiment(tmp_path):
         max_size=5,
         step_size=2,
         num_runs=3,
-        varreg_lambda=0
+        optimizer=base_optimizer()
     )
     experiment.run()
 
@@ -94,7 +96,7 @@ def test_uniform_sampling_reduction(tmp_path):
         max_size=5,
         step_size=1,
         num_runs=1,
-        varreg_lambda=0
+        optimizer=base_optimizer()
     )
 
     for cur_config in experiment.get_config_grid():
@@ -118,7 +120,7 @@ def test_oblivious_sketching_experiment(tmp_path):
         kyfan_percent=0.25,
         sketchratio=2/3,
         cohensketch=1,
-        varreg_lambda=0
+        optimizer=base_optimizer()
     )
     experiment.run()
 
@@ -155,7 +157,7 @@ def test_oblivious_sketching_size_covertype(tmp_path):
         kyfan_percent=0.25,
         sketchratio=2/3,
         cohensketch=1,
-        varreg_lambda=0
+        optimizer=base_optimizer()
     )
 
     for cur_config in experiment.get_config_grid():
@@ -175,7 +177,7 @@ def test_l2s_experiment(tmp_path):
         max_size=5,
         step_size=2,
         num_runs=3,
-        varreg_lambda=0
+        optimizer=base_optimizer()
     )
     experiment.run()
 
@@ -205,7 +207,7 @@ def test_l2s_experiment_parallel(tmp_path):
         max_size=5,
         step_size=2,
         num_runs=3,
-        varreg_lambda=0
+        optimizer=base_optimizer()
     )
     experiment.run(parallel=True)
 
@@ -235,7 +237,7 @@ def test_l2s_reduction(tmp_path):
         max_size=5,
         step_size=1,
         num_runs=1,
-        varreg_lambda=0
+        optimizer=base_optimizer()
     )
 
     for cur_config in experiment.get_config_grid():

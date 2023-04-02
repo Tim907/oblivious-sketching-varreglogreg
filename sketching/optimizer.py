@@ -155,14 +155,15 @@ def L1_grad(theta, X, y):
 
 
 def optimize(Z, w=None, block_size=None, k=None, max_len=None, varreg_lambda=0):
-    """Optimizes a weighted instance of logistic regression with given hyperparameter lambda of variance-regularization."""
+    """Optimizes a weighted instance of logistic regression with given hyperparameter lambda of
+    variance-regularization. """
 
     if w is None:
         w = np.ones(Z.shape[0])
 
     def objective_function(theta):
 
-        if(varreg_lambda == 0):
+        if varreg_lambda == 0:
             return logistic_likelihood(theta, Z, w, block_size=block_size, k=k, max_len=max_len)
 
         return logistic_likelihood_varregul(
@@ -171,7 +172,7 @@ def optimize(Z, w=None, block_size=None, k=None, max_len=None, varreg_lambda=0):
 
     def gradient(theta):
 
-        if(varreg_lambda == 0):
+        if varreg_lambda == 0:
             return logistic_likelihood_grad(theta, Z, w, block_size=block_size, k=k, max_len=max_len)
             
         return logistic_likelihood_grad_varregul(

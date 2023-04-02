@@ -2,9 +2,10 @@ import numpy as np
 from numpy.testing import assert_allclose
 from sklearn.datasets import load_iris
 from sklearn.linear_model import LogisticRegression
-from sklearn.linear_model._logistic import _logistic_loss
-
+from sklearn.metrics import log_loss
 from sketching import optimizer
+from sketching.optimizer import base_optimizer
+from scipy.stats import logistic
 
 
 def test_iris():
@@ -40,15 +41,20 @@ def test_iris_kyfan():
     assert_allclose(theta_optimizer, theta_opt)
 
 
+
 def test_objective_function():
     X, y = load_iris(return_X_y=True)
     y = np.where(y == 1, 1, -1)
     Z = np.multiply(y[:, np.newaxis], X)
 
     theta = np.ones(X.shape[1])
-    loss = _logistic_loss(theta, X, y, alpha=0)
-
-    objective_function = optimizer.get_objective_function(Z)
+    optim = base_optimizer()
+    optim.setDataset(X, y, Z)
+    objective_function = optim.get_objective_function()
     loss_optimizer = objective_function(theta)
+
+    y_pred = np.matmul(X, theta)
+    y_pred = logistic.cdf(y_pred)
+    loss = log_loss(y, y_pred, normalize=False)
 
     assert_allclose(loss_optimizer, loss)

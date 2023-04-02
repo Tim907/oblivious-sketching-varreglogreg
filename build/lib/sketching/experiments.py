@@ -64,8 +64,22 @@ class BaseExperiment(abc.ABC):
         return optimizer.optimize(Z=reduced_matrix, w=weights, varreg_lambda=varreg_lambda).x
 
     def run(self, parallel=False, n_jobs=-2, add=False):
+        """Runs the experiment with given settings. Can take a few minutes.
+
+        Parameters
+        ----------
+        parallel : bool
+            A flag used if multiple CPU Cores should be used to run different sketch sizes of the grid in parallel.
+        n_jobs : int
+            The number of CPU cores used. If -1 all are used. For n_jobs = -2, all but one are used. For n_jobs = -3, all but two etc.
+        add : bool, optional
+            A flag used if the experimental result should be appended to the .csv (True) otherwise overwrite with new .csv (False).
+            Useful if one wants to calculate more replications afterwards for a smoother plot.
+        """
+
         Z = self.dataset.get_Z()
         logger.info(f"Varreg: {self.varreg_lambda}")
+
         beta_opt = self.dataset.get_beta_opt(self.optimizer)
         objective_function = self.optimizer.get_objective_function()
         f_opt = objective_function(beta_opt)
@@ -104,10 +118,10 @@ class BaseExperiment(abc.ABC):
         logger.info(f"Writing results to {self.results_filename}")
 
         df = pd.DataFrame(results)
-        if not os.path.isfile(self.results_filename):
+        if not os.path.isfile(self.results_filename) or add is False:
             df.to_csv(self.results_filename, index=False)
         else:
-            df.to_csv(self.results_filename, mode = None if add == False else "a", header = add == False, index=False)
+            df.to_csv(self.results_filename, mode="a", header=False, index=False)
 
         logger.info("Done.")
 
@@ -167,12 +181,12 @@ class CauchySketchingExperiment(BaseExperiment):
         )
 
     def get_reduced_matrix_and_weights(self, config):
-        Z = self.dataset.get_Z()
+
+        Z = self.optimizer.get_Z()
         n = self.dataset.get_n()
         size = config["size"]
-        d = self.dataset.get_d() + 1
+        d = Z.shape[1]
 
-        #np.seterr(all='raise')
         sketch = Cauchysketch(size, n, d)
         for j in range(0, n):
             sketch.insert(Z[j])
@@ -217,9 +231,9 @@ class ObliviousSketchingExperiment(BaseExperiment):
         self.cohensketch = cohensketch
 
     def get_reduced_matrix_and_weights(self, config):
-        Z = self.dataset.get_Z()
+        Z = self.optimizer.get_Z()
         n = self.dataset.get_n()
-        d = self.dataset.get_d() + 1
+        d = Z.shape[1]
         size = config["size"]
 
         # divide by (h_max + 1) + to get one more block for unif sampling
@@ -314,6 +328,7 @@ class SGDExperiment(BaseExperiment):
         num_runs,
         dataset: Dataset,
         results_filename,
+        optimizer: optimizer.base_optimizer,
     ):
         n = dataset.get_n()
         super().__init__(
@@ -323,7 +338,7 @@ class SGDExperiment(BaseExperiment):
             step_size=0,
             dataset=dataset,
             results_filename=results_filename,
-            optimizer=optimizer.base_optimizer(),
+            optimizer=optimizer,
         )
 
     def get_config_grid(self):
@@ -337,18 +352,3 @@ class SGDExperiment(BaseExperiment):
     def get_reduced_matrix_and_weights(self, config):
         # For SGD, no reduction is performed
         return None, None
-
-    def optimize(self, reduced_matrix, weights):
-        """Performs a run of stochastic gradient descent."""
-        X = self.dataset.get_X()
-        y = self.dataset.get_y()
-
-        learner = SGDClassifier(
-            loss="log", alpha=0, learning_rate="adaptive", eta0=0.01, max_iter=1
-        )
-
-        learner.partial_fit(X, y, classes=np.unique(y))
-
-        beta_opt = np.concatenate((learner.coef_[0], learner.intercept_))
-
-        return beta_opt
