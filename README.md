@@ -8,7 +8,7 @@ This is the accompanying code repository for the paper submitted at ICLR (2023)
 
    ```bash
    git clone https://github.com/Tim907/oblivious_sketching_varreglogreg
-   cd oblivious-sketching-varreglogreg
+   cd oblivious_sketching_varreglogreg
    ```
 
 2. Create and activate a new virtual environment
