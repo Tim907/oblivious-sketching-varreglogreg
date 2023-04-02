@@ -23,6 +23,8 @@ def _coinsert(X_prime, x_vec, alpha, b, N, h_max, s):
 
 
 class Cosketch:
+    """Sketch used to calculate an Oblivious Sketching Experiment when parameter cohensketch > 1"""
+    
     def __init__(self, h_max, b, N, n, d, s):
         self.h_max = h_max
         self.b = b

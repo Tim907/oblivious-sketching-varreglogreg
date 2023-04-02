@@ -64,15 +64,24 @@ class BaseExperiment(abc.ABC):
         return optimizer.optimize(Z=reduced_matrix, w=weights, varreg_lambda=varreg_lambda).x
 
     def run(self, parallel=False, n_jobs=-2, add=False):
+        """Runs the experiment with given settings. Can take a few minutes.
+
+        Parameters
+        ----------
+        parallel : bool
+            A flag used if multiple CPU Cores should be used to run different sketch sizes of the grid in parallel.
+        n_jobs : int
+            The number of CPU cores used. If -1 all are used. For n_jobs = -2, all but one are used. For n_jobs = -3, all but two etc.
+        add : bool, optional
+            A flag used if the experimental result should be appended to the .csv (True) otherwise overwrite with new .csv (False).
+            Useful if one wants to calculate more replications afterwards for a smoother plot.
+        """
+
         Z = self.dataset.get_Z()
         logger.info(f"Varreg: {self.varreg_lambda}")
 
         beta_opt = self.dataset.get_beta_opt(self.optimizer)
         objective_function = self.optimizer.get_objective_function()
-        #temp_optimizer = optimizer.varreg_optimizer(self.varreg_lambda)
-        #temp_optimizer.setDataset(self.dataset.get_X(), self.dataset.get_y(), Z)
-        #beta_opt = self.dataset.get_beta_opt(temp_optimizer)
-        #objective_function = temp_optimizer.get_objective_function()
         f_opt = objective_function(beta_opt)
 
         logger.info("Running experiments...")
@@ -109,7 +118,7 @@ class BaseExperiment(abc.ABC):
         logger.info(f"Writing results to {self.results_filename}")
 
         df = pd.DataFrame(results)
-        if not os.path.isfile(self.results_filename) or add == False:
+        if not os.path.isfile(self.results_filename) or add is False:
             df.to_csv(self.results_filename, index=False)
         else:
             df.to_csv(self.results_filename, mode="a", header=False, index=False)

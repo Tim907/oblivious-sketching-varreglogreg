@@ -49,16 +49,15 @@ def only_keep_k(vec, block_size, k, max_len=None, biggest=True):
 
 @jit(nopython=True)
 def calc(v):
+    """calculates log(1 + exp(v)), but becomes identity function if v is bigger than 34"""
     if v < 34:
-        "prevent underflow exception"
+        # prevent underflow exception
         if(v < -200): 
             return np.exp(-200)
 
         return np.log1p(np.exp(v))
-    else:
-        "function becomes linear"
-        return v
-
+    return v
+        
 
 calc_vectorized = np.vectorize(calc)
 
@@ -76,6 +75,8 @@ def logistic_likelihood(theta, Z, weights=None, block_size=None, k=None, max_len
 
 
 def logistic_likelihood_varregul(theta, Z, weights=None, block_size=None, k=None, max_len=None, lamb=0):
+    """the variance regularized version of logistic_likelihood"""
+
     v = -Z.dot(theta)
     if block_size is not None and k is not None:
         v, indices = only_keep_k(v, block_size, k, max_len=max_len, biggest=True)
@@ -88,6 +89,8 @@ def logistic_likelihood_varregul(theta, Z, weights=None, block_size=None, k=None
     else:
         term1 = np.sum(likelihoods)
         term2 = lamb / 2 * np.sum(np.square(likelihoods).T)
+        
+    # take the sum of the three summands
     return sum((
         term1,
         term2,
@@ -96,8 +99,7 @@ def logistic_likelihood_varregul(theta, Z, weights=None, block_size=None, k=None
 
 
 def logistic_likelihood_grad(
-    theta, Z, weights=None, block_size=None, k=None, max_len=None
-):
+    theta, Z, weights=None, block_size=None, k=None, max_len=None):
     v = Z.dot(theta)
     if block_size is not None and k is not None:
         v, indices = only_keep_k(v, block_size, k, max_len=max_len, biggest=False)
@@ -114,8 +116,9 @@ def logistic_likelihood_grad(
 
 
 def logistic_likelihood_grad_varregul(
-    theta, Z, weights=None, block_size=None, k=None, max_len=None, lamb=0
-):
+    theta, Z, weights=None, block_size=None, k=None, max_len=None, lamb=0):
+    """the variance regularized version of the logistic likelihood gradient"""
+
     v = Z.dot(theta)
     if block_size is not None and k is not None:
         v, indices = only_keep_k(v, block_size, k, max_len=max_len, biggest=False)
@@ -135,23 +138,25 @@ def logistic_likelihood_grad_varregul(
     grad_weights_2 = weight_log_term * sigmoid_term
     final_term_1 = grad_weights_1.dot(-Z)
 
+    # take the sum of the three summands
     return sum((final_term_1,
         lamb * grad_weights_2.dot(-Z),
         -lamb / Z.shape[0] * np.sum(weight_log_term) * final_term_1
     ))
 
 
-"loss and gradient for cauchy-sketching"
 def L1_objective(theta, X, y):
+    """L1 loss function used in cauchy-sketching"""
     return np.sum(np.abs(X.dot(theta) - y))
+
 def L1_grad(theta, X, y):
+    """L1 gradient function used in cauchy-sketching"""
     return sum(np.multiply(X, np.sign(X.dot(theta) - y)[:, np.newaxis]))
 
 
 def optimize(Z, w=None, block_size=None, k=None, max_len=None, varreg_lambda=0):
-    """
-    Optimizes a weighted instance of logistic regression.
-    """
+    """Optimizes a weighted instance of logistic regression with given hyperparameter lambda of variance-regularization."""
+
     if w is None:
         w = np.ones(Z.shape[0])
 
@@ -179,9 +184,7 @@ def optimize(Z, w=None, block_size=None, k=None, max_len=None, varreg_lambda=0):
 
 
 def optimize_L1(Z):
-    """
-    Optimizes by L1 loss according to Theorem 1 of the paper.
-    """
+    """Optimizes by L1 loss according to Theorem 1 of the paper."""
 
     X = Z[:, 0:(Z.shape[1]-1)]
     y = Z[:, -1]
@@ -198,6 +201,7 @@ def optimize_L1(Z):
 
 
 class base_optimizer:
+    """optimizer for logistic regression"""
 
     def __init__(self) -> None:
         self.varreg_lambda = 0
@@ -217,17 +221,8 @@ class base_optimizer:
         return lambda theta: logistic_likelihood(theta, self.Z)
 
 
-class oblivious_optimizer(base_optimizer):
-
-    def optimize(self, reduced_matrix, weights=None):
-        return super().optimize(reduced_matrix, weights)
-
-    def get_objective_function(self):
-        return lambda theta: logistic_likelihood(theta, self.Z)
-
-
 class varreg_optimizer(base_optimizer):
-
+    """optimizer for variance-regularized logistic regression"""
     def __init__(self, varreg_lambda):
         super().__init__()
         self.varreg_lambda = varreg_lambda
@@ -240,7 +235,7 @@ class varreg_optimizer(base_optimizer):
 
 
 class L1_optimizer(base_optimizer):
-
+    """optimizer for L1 optimization used in cauchy-sketch"""
     def optimize(self, reduced_matrix, weights=None):
         return optimize_L1(reduced_matrix).x
 
@@ -253,7 +248,7 @@ class L1_optimizer(base_optimizer):
 
 
 class sgd_optimizer(varreg_optimizer):
-
+    """optimizer for stochastic gradient descent"""
     def optimize(self, reduced_matrix, weights=None):
         """Performs a run of stochastic gradient descent."""
         X = self.X

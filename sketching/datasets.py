@@ -357,7 +357,8 @@ class Webspam_libsvm(Dataset):
         logger.info("Extracting data...")
         
         #
-        # wrong format in lines 233355 and 306260: column names not ascending, 22.7.2022
+        # wrong format in lines 233355 and 306260: column names not ascending
+        # These two rows get simply removed. Last time checked on 22.7.2022
         #
         file_raw = lzma.open(io.BytesIO(contents), mode = "rb")
         file_lines = file_raw.readlines()

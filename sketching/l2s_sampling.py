@@ -43,11 +43,7 @@ def gauss_QR(X, k=1):
 
     n, d = R_inv.shape
     g = np.random.normal(loc=0, scale=1 / np.sqrt(k), size=(d, k))
-    # print(g)
-    # print(str(R_inv.shape) + "//" + str(g.shape))
     r = np.dot(R_inv, g)
-    # print(r)
-    # print(str(X.shape) + "//" + str(r.shape))
     Q_ = np.dot(X, r)
     return Q_
 

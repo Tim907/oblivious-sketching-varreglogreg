@@ -23,6 +23,28 @@ ch.setFormatter(formatter)
 logger.addHandler(ch)
 
 def run_experiments(dataset: Dataset, min_size, max_size, step_size, num_runs, varreg_lambda, add=False):
+    """Runs the sketching experiment and creates .csv output files in the experimental-results folder, used for the Jupyter Notebook plots.
+
+    Parameters
+    ----------
+    dataset : Dataset
+        The dataset to use for the experiment and Sketch
+    min_size : int
+        lower bound of the grid. First sketch size
+    max_size : int
+        upper bound of the grid. Not necessarily a valid sketch size used.
+        Can possibly exceed max_size a single time, in case min_size + [multiple of step_size] < max_size.
+    step_size : int
+        interval of the grid
+    num_runs : int
+        Number of replications. Note that a median is taken of useful quantities, so try uneven numbers.
+    varreg_lambda : float
+        The hyperparameter used for the variance-regularised logistic regression.
+    add : bool
+        A flag used if the experimental result should be appended to the .csv (True) otherwise overwrite with new .csv (False).
+        Useful if one wants to calculate more replications afterwards for a smoother plot.
+    """
+
     # check if results directory exists
     if not settings.RESULTS_DIR.exists():
         settings.RESULTS_DIR.mkdir()

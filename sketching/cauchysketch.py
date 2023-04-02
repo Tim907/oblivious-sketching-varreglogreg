@@ -5,6 +5,8 @@ from numba import jit
 from scipy.stats import cauchy
 
 class Cauchysketch:
+    """Sketch used to calculate a CauchySketchingExperiment"""
+    
     def __init__(self, N, n, d):
         self.N = N
         self.n = n
@@ -13,7 +15,6 @@ class Cauchysketch:
         shape = (N, d)
         self.Z_prime = np.zeros(shape)
         self.weights = np.ones(N)
-        #self.cauchy = np.reshape(np.random.standard_cauchy(N * n), (N, n))
 
     def insert(self, x_vec):
         rand_cauchy = cauchy.rvs(size=self.N)
