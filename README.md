@@ -35,7 +35,7 @@ This is the accompanying code repository for the paper submitted at ICLR (2023)
 4. To confirm that everything worked, install `pytest` and run the tests
    ```bash
    pip install pytest
-   pytest
+   python -m pytest
    ```
 
 ## How to run the experiments
