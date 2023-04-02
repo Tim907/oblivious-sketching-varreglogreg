@@ -1,5 +1,7 @@
 # Oblivious Sketching for Logistic Regression
 
+[![python-version](https://img.shields.io/badge/python-3.8%20%7C%203.9-blue)](https://img.shields.io/badge/python-3.8%20%7C%203.9-blue)
+
 This is the accompanying code repository for the paper submitted at ICLR (2023)
 
 ## How to install
@@ -8,7 +10,7 @@ This is the accompanying code repository for the paper submitted at ICLR (2023)
 
    ```bash
    git clone https://github.com/Tim907/oblivious_sketching_varreglogreg
-   cd oblivious-sketching-varreglogreg
+   cd oblivious_sketching_varreglogreg
    ```
 
 2. Create and activate a new virtual environment
@@ -33,7 +35,7 @@ This is the accompanying code repository for the paper submitted at ICLR (2023)
 4. To confirm that everything worked, install `pytest` and run the tests
    ```bash
    pip install pytest
-   pytest
+   python -m pytest
    ```
 
 ## How to run the experiments
