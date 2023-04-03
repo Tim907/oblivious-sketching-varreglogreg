@@ -1,8 +1,8 @@
-# Oblivious Sketching for Logistic Regression
+# Almost Linear Constant-Factor Sketching for 𝓁₁ and Logistic Regression 
 
 [![python-version](https://img.shields.io/badge/python-3.8%20%7C%203.9-blue)](https://img.shields.io/badge/python-3.8%20%7C%203.9-blue)
 
-This is the accompanying code repository for the paper submitted at ICLR (2023)
+This is the accompanying code repository for the ICLR 2023 publication "Almost Linear Constant-Factor Sketching for 𝓁₁ and Logistic Regression" by Alexander Munteanu, Simon Omlor and David P. Woodruff. 
 
 ## How to install
 
@@ -49,6 +49,9 @@ For example, to run the covertype experiments you can use the following command:
 ```bash
 python scripts/run_experiments_covertype.py
 ```
+
+You can try different optimizers for the experiments, by changing the experiments in `utils.run_experiments` to the classes defined in `optimizer.py`.
+There are optimizers for logistic likelihood, variance-regularized logistic likelihood, L1-optimization and Stochastic gradient descent
 
 ## How to recreate the plots
 
