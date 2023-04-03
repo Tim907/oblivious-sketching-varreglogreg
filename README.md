@@ -50,7 +50,7 @@ For example, to run the covertype experiments you can use the following command:
 python scripts/run_experiments_covertype.py
 ```
 
-You can try different optimizers for the experiments, by changing the experiments in utils.run_experiments to the classes defined in optimizer.py.
+You can try different optimizers for the experiments, by changing the experiments in `utils.run_experiments` to the classes defined in `optimizer.py`.
 There are optimizers for logistic likelihood, variance-regularized logistic likelihood, L1-optimization and Stochastic gradient descent
 
 ## How to recreate the plots
