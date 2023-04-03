@@ -1,5 +1,4 @@
 import abc
-import bz2
 import io
 import logging
 import ssl

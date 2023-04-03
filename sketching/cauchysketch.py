@@ -1,7 +1,4 @@
-import math
-
 import numpy as np
-from numba import jit
 from scipy.stats import cauchy
 
 class Cauchysketch:

@@ -1,5 +1,4 @@
 import sys
-
 import numpy as np
 import numpy.linalg as npl
 import numpy.random as npr

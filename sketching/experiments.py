@@ -6,7 +6,6 @@ import os
 import numpy as np
 import pandas as pd
 from joblib import Parallel, delayed
-from sklearn.linear_model import SGDClassifier
 
 from . import optimizer, settings
 from .datasets import Dataset
@@ -78,7 +77,7 @@ class BaseExperiment(abc.ABC):
         """
 
         Z = self.dataset.get_Z()
-        logger.info(f"Varreg: {self.varreg_lambda}")
+        logger.info(f"Variance-regularization parameter: {self.varreg_lambda}")
 
         beta_opt = self.dataset.get_beta_opt(self.optimizer)
         objective_function = self.optimizer.get_objective_function()
