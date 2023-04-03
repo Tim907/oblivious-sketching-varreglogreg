@@ -1,4 +1,4 @@
-# Oblivious Sketching for Logistic Regression
+# Almost Linear Constant-Factor Sketching for 𝓁₁ and Logistic Regression 
 
 [![python-version](https://img.shields.io/badge/python-3.8%20%7C%203.9-blue)](https://img.shields.io/badge/python-3.8%20%7C%203.9-blue)
 
