@@ -5,4 +5,5 @@ sketching/__pycache__/
 oblivious_sketching_logreg.egg-info/
 .data-cache/
 .idea/
+.vs/
 sketching.log
